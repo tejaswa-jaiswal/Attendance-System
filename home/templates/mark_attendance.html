@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance - {{ subject.name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .form-section {
+            padding: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            font-size: 16px;
+            padding: 12px 30px;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .student-table thead {
+            background: #f8f9fa;
+        }
+        
+        .student-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .student-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .student-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .student-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .student-details {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .status-select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        
+        .status-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .submit-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .submit-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .student-table {
+                font-size: 12px;
+            }
+            
+            .student-table th,
+            .student-table td {
+                padding: 8px;
+            }
+            
+            .submit-section {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mark Attendance - {{ subject.name }}</h1>
+            <p>Subject Code: {{ subject.code }} | Teacher: {{ teacher.name }}</p>
+        </div>
+        
+       <form method='POST' action="{% url 'save_attendance' %}">
+                    {% csrf_token %}
+            <input type="hidden" name="subject_id" value="{{ subject.id }}">
+            <div class="form-section">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="attendance_date">Date</label>
+                        <input type="date" id="attendance_date" name="date" required value="{{ today|date:'Y-m-d' }}">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="session_type">Session Type</label>
+                        <select id="session_type" name="session_type" required>
+                            <option value="One">Single Session</option>
+                            <option value="Two">Double Session</option>
+                        </select>
+                    </div>
+                </div>
+                
+                {% if students %}
+                    <div class="quick-actions">
+                        <button type="button" class="btn btn-secondary" onclick="markAll('Present')">Mark All Present</button>
+                        <button type="button" class="btn btn-secondary" onclick="markAll('Absent')">Mark All Absent</button>
+                    </div>
+                    
+                    <table class="student-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Student Details</th>
+                                <th>Roll Number</th>
+                                <th>Course & Year</th>
+                                <th style="width: 150px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div class="student-info">
+                                        <span name = 'name' class="student-name">{{ student.name }}</span>
+                                        <span name = 'branch' class="student-details">{{ student.branch|default:"" }}</span>
+                                    </div>
+                                </td>
+                                <td name='branch' >{{ student.roll_number }}</td>
+                                <td name = 'course'>{{ student.course }} - Year {{ student.year }}</td>
+                                <td>
+                                    <select name="status_{{ student.roll_number }}" class="status-select" required>
+                                        <option value="Present" selected>Present</option>
+                                        <option value="Absent">Absent</option>
+                                        <option value="Late">Late</option>
+                                        <option value="Excused">Excused</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>No Students Found</h3>
+                        <p>There are no students assigned to mark attendance for this subject.</p>
+                    </div>
+                {% endif %}
+                </div>
+            {% if students %}
+            <div class="submit-section">
+                <div class="submit-info">
+                    <strong>{{ students|length }}</strong> student{{ students|length|pluralize }} to mark
+                </div>
+                <button type="submit"  class="btn btn-success">Submit Attendance</button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+    
+    <script>
+        // Minimal JavaScript for quick actions only
+        function markAll(status) {
+            const selects = document.querySelectorAll('.status-select');
+            selects.forEach(select => {
+                select.value = status;
+            });
+        }
+        
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('attendance_date');
+            if (!dateInput.value) {
+                dateInput.valueAsDate = new Date();
+            }
+        });
+    </script>
+</body>
+</html>

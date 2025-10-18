@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendanceX - Student Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+            animation: fadeIn 0.6s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 28px;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-logo .x {
+            color: #64b5f6;
+            text-shadow: 0 0 15px rgba(100, 181, 246, 0.8);
+            font-size: 32px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .menu-item:nth-child(1) { animation-delay: 0.3s; }
+        .menu-item:nth-child(2) { animation-delay: 0.4s; }
+        .menu-item:nth-child(3) { animation-delay: 0.5s; }
+        .menu-item:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .menu-link {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #64b5f6;
+            transform: translateX(5px);
+        }
+
+        .menu-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: #64b5f6;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            animation: fadeIn 0.6s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-title h1 {
+            color: #0d47a1;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+        }
+
+        /* Student Info Card */
+        .student-info {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            animation: fadeUp 0.6s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            border-left: 4px solid #1e88e5;
+            padding-left: 15px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #0d47a1;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Attendance Section */
+        .attendance-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .attendance-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .attendance-card:nth-child(1) { animation-delay: 0.5s; }
+        .attendance-card:nth-child(2) { animation-delay: 0.6s; }
+
+        .card-title {
+            color: #0d47a1;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #1e88e5, #64b5f6);
+            border-radius: 2px;
+        }
+
+        /* Attendance Progress */
+        .attendance-progress {
+            text-align: center;
+        }
+
+        .progress-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+        }
+
+        .progress-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#1e88e5 var(--percentage), #e0e0e0 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(30, 136, 229, 0.2);
+            animation: spin 1.5s ease-out;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(-90deg);
+            }
+            to {
+                transform: rotate(calc(-90deg + var(--percentage)));
+            }
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .percentage {
+            font-size: 44px;
+            font-weight: 900;
+            color: #0d47a1;
+            line-height: 1;
+        }
+
+        .percentage-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .attendance-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 3px solid #1e88e5;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: #e3f2fd;
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 900;
+            color: #0d47a1;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Attendance History */
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease-out backwards;
+        }
+
+        .history-item:hover {
+            background: #f8f9fa;
+            padding-left: 20px;
+        }
+
+        .history-item:nth-child(1) { animation-delay: 0.7s; }
+        .history-item:nth-child(2) { animation-delay: 0.75s; }
+        .history-item:nth-child(3) { animation-delay: 0.8s; }
+        .history-item:nth-child(4) { animation-delay: 0.85s; }
+        .history-item:nth-child(5) { animation-delay: 0.9s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-date {
+            flex: 1;
+            color: #0d47a1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .history-time {
+            color: #666;
+            font-size: 13px;
+            margin: 0 20px;
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-present {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .status-absent {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #e53935;
+        }
+
+        .status-leave {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ff9800;
+        }
+
+        /* Scrollbar */
+        .history-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background: #1e88e5;
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb:hover {
+            background: #0d47a1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .attendance-section {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 250px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                position: fixed;
+                left: 0;
+                z-index: 1000;
+                transition: width 0.3s ease;
+            }
+
+            .sidebar.active {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .toggle-sidebar {
+                display: block;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .attendance-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .toggle-sidebar {
+            display: none;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+
+        .toggle-sidebar:hover {
+            background: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <h1>Attend<span class="x">X</span></h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="#dashboard" class="menu-link active">📊 Dashboard</a>
+            </li>
+            <li class="menu-item">
+                <a href="#history" class="menu-link">📋 Attendance History</a>
+            </li>
+            <li class="menu-item">
+                <a href="#reports" class="menu-link">📈 Reports</a>
+            </li>
+            <li class="menu-item">
+                <a href="#settings" class="menu-link">⚙️ Settings</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <button class="toggle-sidebar" id="toggleSidebar">☰</button>
+            <div class="header-title">
+                <h1>Dashboard</h1>
+                <p>Welcome back, {{ student.user.username }}!</p>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+
+        <!-- Student Info -->
+        <div class="student-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Student Name</div>
+                    <div class="info-value">{{student.user.username}} </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Branch</div>
+                    <div class="info-value">{{student.branch}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Roll Number</div>
+                    <div class="info-value">{{student.roll_number}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Course</div>
+                    <div class="info-value">{{student.course}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Year</div>
+                    <div class="info-value">{{student.year}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Section -->
+        <div class="attendance-section">
+            <!-- Attendance Overview -->
+            <div class="attendance-card">
+                <div class="card-title">Overall Attendance</div>
+                <div class="attendance-progress">
+                    <div class="progress-container" style="--percentage: {{ attendance_percentage }}%;">
+                        <div class="progress-circle">
+                            <div class="progress-text">
+                                <div class="percentage">{{ attendance_percentage }}%</div>
+                                <div class="percentage-label">Present</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attendance-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ present_count }}</div>
+                            <div class="stat-label">Present</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ absent_count }}</div>
+                            <div class="stat-label">Absent</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ excused_count }}</div>
+                            <div class="stat-label">Excused</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="attendance-card">
+                <div class="card-title">Recent Attendance</div>
+                <div class="history-container">
+                    {% if attendance_records %}
+                        {% for record in attendance_records %}
+                        <div class="history-item">
+                            <span class="history-date">{{ record.date|date:"d M Y" }}</span>
+                            <span class="history-time">{{ record.subject.name }}</span>
+                            <span class="status-badge status-{{ record.status|lower }}">{{ record.status }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-data">
+                            <p>No attendance records found.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle for mobile
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        toggleSidebar.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when a menu item is clicked
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                sidebar.classList.remove('active');
+            });
+        });
+
+        // Logout function
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // For Django integration, uncomment the code below
+                /*
+                fetch('/logout/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => {
+                    window.location.href = '/login/';
+                })
+                .catch(error => console.error('Error:', error));
+                */
+
+                // Demo redirect
+                alert('Logged out successfully!');
+                window.location.href = '/login/';
+            }
+        }
+
+        // Add ripple effect on click
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
